@@ -3,6 +3,7 @@
 
 #include <QApplication>
 #include <QList>
+#include <QTableWidget>
 
 class HomeLibrary
 {
@@ -13,7 +14,9 @@ private:
     QString publish_year;
     QString genre;
 public:
-
+    void static fillByList(QTableWidget *tw, QList<HomeLibrary> list);
+    void static fillByObject(QTableWidget *tw, HomeLibrary book);
+    void static fillHeaders(QTableWidget *tw, QList<QString> list);
     int get_id(){
         return id;
     }

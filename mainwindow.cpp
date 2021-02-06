@@ -16,8 +16,8 @@ MainWindow::MainWindow(QWidget *parent)
     ui->tableWidget_2->setEditTriggers(QAbstractItemView::NoEditTriggers);
     QList<QString> headers;
     headers << "id" << "Назва" << "Автор" << "Дата публікації" << "Жанр";
-    ui->tableWidget->fillHeaders(headers);
-    ui->tableWidget_2->fillHeaders(headers);
+    HomeLibrary::fillHeaders(ui->tableWidget, headers);
+    HomeLibrary::fillHeaders(ui->tableWidget_2, headers);
 }
 
 MainWindow::~MainWindow()
@@ -35,10 +35,7 @@ void MainWindow::on_pushButton_2_clicked()
     case 0: search = HomeLibrary::search_by_author(list, s);
         break;
     case 1: if(!(s.toInt()<2022 && s.toInt()>=1457)){
-            QMessageBox msgbox;
-            msgbox.setWindowTitle("Помилка");
-            msgbox.setText("Некоректно введений рік\nПерша книга була видана у 1457 році!");
-            msgbox.exec();
+            message("Помилка", "Некоректно введений рік\nПерша книга була видана у 1457 році!");
             ui->lineEdit_5->setText("");
             return;
         }
@@ -48,49 +45,13 @@ void MainWindow::on_pushButton_2_clicked()
          break;
     }
 
-    if(search.length()!=0) ui->tableWidget_2->fillByList(search);
+    if(search.length()!=0) HomeLibrary::fillByList(ui->tableWidget_2, search);
     else{
-        QMessageBox msgbox;
-        msgbox.setWindowTitle("Помилка");
-        msgbox.setText("Потрібних книг не знайдено");
-        msgbox.exec();
-    }
-    //ui->tableWidget->setItem(0, 0,  new QTableWidgetItem(HomeLibrary::add_book.get_title()));
-    //ui->tableWidget->setItem(0, 1,  new QTableWidgetItem(HomeLibrary::add_book.get_author()));
-    //ui->tableWidget->setItem(0, 2,  new QTableWidgetItem(HomeLibrary::add_book.get_publish_year()));
-    //ui->tableWidget->setItem(0, 3,  new QTableWidgetItem(HomeLibrary::add_book.get_genre()));
-}
-
-void QTableWidget::fillByList(QList<HomeLibrary> list){
-    this->setRowCount(0);
-    foreach(HomeLibrary book, list){
-        this->setRowCount(this->rowCount()+1);
-        this->setItem(this->rowCount()-1, 0, new QTableWidgetItem(QString::number(book.get_id())));
-        this->setItem(this->rowCount()-1, 1, new QTableWidgetItem(book.get_title()));
-        this->setItem(this->rowCount()-1, 2, new QTableWidgetItem(book.get_author()));
-        this->setItem(this->rowCount()-1, 3, new QTableWidgetItem(book.get_publish_year()));
-        this->setItem(this->rowCount()-1, 4, new QTableWidgetItem(book.get_genre()));
+        message("Помилка", "Потрібних книг не знайдено");
     }
 }
 
-void QTableWidget::fillHeaders(QList<QString> list){
-    if(list.length()>=1){
-    this->setColumnCount(list.length());
-    for(int i = 0; i < list.length(); i++){
-        this->setHorizontalHeaderItem(i, new QTableWidgetItem(list.at(i)));
-    }
-    }
-}
 
-void QTableWidget::fillByObject(HomeLibrary book){
-    this->setRowCount(this->rowCount()+1);
-    this->setItem(this->rowCount()-1, 0, new QTableWidgetItem(QString::number(book.get_id())));
-    this->setItem(this->rowCount()-1, 1, new QTableWidgetItem(book.get_title()));
-    this->setItem(this->rowCount()-1, 2, new QTableWidgetItem(book.get_author()));
-    this->setItem(this->rowCount()-1, 3, new QTableWidgetItem(book.get_publish_year()));
-    this->setItem(this->rowCount()-1, 4, new QTableWidgetItem(book.get_genre()));
-
-}
 
 
 void MainWindow::on_pushButton_clicked()
@@ -102,10 +63,7 @@ void MainWindow::on_pushButton_clicked()
     QString genre = ui->lineEdit_4->text();
     if(title!="" && author!="" && publish_year!="" && genre!=""){
         if(!(publish_year.toInt()<2022 && publish_year.toInt()>=1457)){
-            QMessageBox msgbox;
-            msgbox.setWindowTitle("Помилка");
-            msgbox.setText("Некоректно введений рік\nПерша книга була видана у 1457 році!");
-            msgbox.exec();
+            message("Помилка", "Некоректно введений рік\nПерша книга була видана у 1457 році!");
             ui->lineEdit_3->setText("");
             return;
         }
@@ -119,16 +77,10 @@ void MainWindow::on_pushButton_clicked()
             ui->lineEdit_2->setText("");
             ui->lineEdit_3->setText("");
             ui->lineEdit_4->setText("");
-            ui->tableWidget->fillByObject(book);
-            QMessageBox msgbox;
-            msgbox.setWindowTitle("Важливо");
-            msgbox.setText("Нова книга була додана");
-            msgbox.exec();
+            HomeLibrary::fillByObject(ui->tableWidget, book);
+            message("Важливо", "Нова книга була додана");
     }else{
-        QMessageBox msgbox;
-        msgbox.setWindowTitle("Помилка");
-        msgbox.setText("Заповніть всі поля");
-        msgbox.exec();
+        message("Помилка", "Заповніть всі поля");
     }
 }
 
@@ -138,19 +90,13 @@ void MainWindow::on_lineEdit_3_textChanged(const QString &arg1)
         {
             if(!c.isNumber())
             {
-                QMessageBox msgbox;
-                msgbox.setWindowTitle("Помилка");
-                msgbox.setText("Ви повинні ввести число");
-                msgbox.exec();
+                message("Помилка", "Ви повинні ввести число");
                 ui->lineEdit_3->setText("");
                 return;
             }
     }
     if(!(arg1.toInt()<2022 && arg1.toInt()>=1457) && arg1.length()>=4){
-        QMessageBox msgbox;
-        msgbox.setWindowTitle("Помилка");
-        msgbox.setText("Некоректно введений рік\nПерша книга була видана у 1457 році!");
-        msgbox.exec();
+        message("Помилка", "Некоректно введений рік\nПерша книга була видана у 1457 році!");
         ui->lineEdit_3->setText("");
         return;
     }
@@ -163,19 +109,13 @@ void MainWindow::on_lineEdit_5_textChanged(const QString &arg1)
         {
             if(!c.isNumber())
             {
-                QMessageBox msgbox;
-                msgbox.setWindowTitle("Помилка");
-                msgbox.setText("Ви повинні ввести число");
-                msgbox.exec();
+                message("Помилка", "Ви повинні ввести число");
                 ui->lineEdit_5->setText("");
                 return;
             }
     }
     if(!(arg1.toInt()<2022 && arg1.toInt()>=1457) && arg1.length()>=4){
-        QMessageBox msgbox;
-        msgbox.setWindowTitle("Помилка");
-        msgbox.setText("Некоректно введений рік\nПерша книга була видана у 1457 році!");
-        msgbox.exec();
+        message("Помилка", "Некоректно введений рік\nПерша книга була видана у 1457 році!");
         ui->lineEdit_5->setText("");
         return;
     }
@@ -199,7 +139,7 @@ void MainWindow::on_comboBox_2_currentIndexChanged(int index)
     case 3: std::sort(list.begin(), list.end(), HomeLibrary::compare_by_genre);
             break;
     }
-    ui->tableWidget->fillByList(list);
+    HomeLibrary::fillByList(ui->tableWidget, list);
   }
 
 void MainWindow::on_lineEdit_6_textChanged(const QString &arg1)
@@ -208,10 +148,7 @@ void MainWindow::on_lineEdit_6_textChanged(const QString &arg1)
         {
             if(!c.isNumber())
             {
-                QMessageBox msgbox;
-                msgbox.setWindowTitle("Помилка");
-                msgbox.setText("Ви повинні ввести число");
-                msgbox.exec();
+                message("Помилка", "Ви повинні ввести число");
                 ui->lineEdit_6->setText("");
                 return;
             }
@@ -229,9 +166,43 @@ void MainWindow::on_pushButton_3_clicked()
         return;
     }
     }
-    QMessageBox msgbox;
-    msgbox.setWindowTitle("Важливо");
-    msgbox.setText("Книга з id = " + id + " відсутня у списку");
-    msgbox.exec();
+    message("Важливо", "Книга з id = " + id + " відсутня у списку");
     ui->lineEdit_6->setText("");
+}
+
+void HomeLibrary::fillByList(QTableWidget *tw, QList<HomeLibrary> list){
+    tw->setRowCount(0);
+    foreach(HomeLibrary book, list){
+        tw->setRowCount(tw->rowCount()+1);
+        tw->setItem(tw->rowCount()-1, 0, new QTableWidgetItem(QString::number(book.get_id())));
+        tw->setItem(tw->rowCount()-1, 1, new QTableWidgetItem(book.get_title()));
+        tw->setItem(tw->rowCount()-1, 2, new QTableWidgetItem(book.get_author()));
+        tw->setItem(tw->rowCount()-1, 3, new QTableWidgetItem(book.get_publish_year()));
+        tw->setItem(tw->rowCount()-1, 4, new QTableWidgetItem(book.get_genre()));
+    }
+}
+
+void HomeLibrary::fillHeaders(QTableWidget *tw, QList<QString> list){
+    if(list.length()>=1){
+    tw->setColumnCount(list.length());
+    for(int i = 0; i < list.length(); i++){
+        tw->setHorizontalHeaderItem(i, new QTableWidgetItem(list.at(i)));
+    }
+    }
+}
+
+void HomeLibrary::fillByObject(QTableWidget *tw,HomeLibrary book){
+    tw->setRowCount(tw->rowCount()+1);
+    tw->setItem(tw->rowCount()-1, 0, new QTableWidgetItem(QString::number(book.get_id())));
+    tw->setItem(tw->rowCount()-1, 1, new QTableWidgetItem(book.get_title()));
+    tw->setItem(tw->rowCount()-1, 2, new QTableWidgetItem(book.get_author()));
+    tw->setItem(tw->rowCount()-1, 3, new QTableWidgetItem(book.get_publish_year()));
+    tw->setItem(tw->rowCount()-1, 4, new QTableWidgetItem(book.get_genre()));
+}
+
+void MainWindow::message(QString title, QString text){
+    QMessageBox msgbox;
+    msgbox.setWindowTitle(title);
+    msgbox.setText(text);
+    msgbox.exec();
 }
